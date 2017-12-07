@@ -27,20 +27,20 @@ namespace server {
     points_labels_size = total_points * sizeof(char);
   }
 
-  static size_t GetSizeOfLidarPoints(const carla_lidar_measurement& lidar_measurement) {
-    size_t total_points = 0;
-    for(int i=0; i<lidar_measurement.channels_count; i++)
-    {
-      total_points += lidar_measurement.points_count_by_channel[i];
-    }
-    return total_points * 3 * sizeof(double);
-  }
+  // static size_t GetSizeOfLidarPoints(const carla_lidar_measurement& lidar_measurement) {
+  //   size_t total_points = 0;
+  //   for(int i=0; i<lidar_measurement.channels_count; i++)
+  //   {
+  //     total_points += lidar_measurement.points_count_by_channel[i];
+  //   }
+  //   return total_points * 3 * sizeof(double);
+  // }
 
   static size_t GetSizeOfBuffer(const_array_view<carla_lidar_measurement> lidar_measurements) {
     size_t total = 0u;
     for (const auto &lidar_measurement : lidar_measurements) {
-      size_t& points_size;
-      size_t& points_labels_size;
+      size_t points_size;
+      size_t points_labels_size;
       GetSizesOfLidarPoints(lidar_measurement, points_size, points_labels_size);
 
       total += sizeof(double); // horizontal_angle
@@ -64,8 +64,8 @@ namespace server {
 
   static size_t WriteLidarMeasurementToBuffer(unsigned char *buffer, const carla_lidar_measurement &lidar_measurement) {
     const auto points_counts_size = GetSizeOfLidarPointsCounts(lidar_measurement);
-    size_t& points_size;
-    size_t& points_labels_size;
+    size_t points_size;
+    size_t points_labels_size;
     GetSizesOfLidarPoints(lidar_measurement, points_size, points_labels_size);
 
     DEBUG_ASSERT(lidar_measurement.points_count_by_channel != nullptr);

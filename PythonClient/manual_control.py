@@ -121,7 +121,7 @@ class Timer(object):
 
 
 class CarlaGame(object):
-    def __init__(self, carla_client, city_name=None):
+    def __init__(self, carla_client, city_name=None, save_images_to_disk=False):
         self.client = carla_client
         self._timer = None
         self._display = None
@@ -134,6 +134,11 @@ class CarlaGame(object):
         self._map = CarlaMap(city_name) if city_name is not None else None
         self._map_shape = self._map.map_image.shape if city_name is not None else None
         self._map_view = self._map.get_map(WINDOW_HEIGHT) if city_name is not None else None
+        self._save_images_to_disk = save_images_to_disk
+        self._image_filename_format='_images/episode_{:0>3d}/{:s}/image_{:0>5d}.png'
+        self._lidar_filename_format='_lidars/episode_{:0>3d}/{:s}/lidar_{:0>5d}.json'
+        self._episode = 0
+        self._frame = 0
 
     def execute(self):
         """Launch the PyGame."""
@@ -170,16 +175,18 @@ class CarlaGame(object):
         self.client.start_episode(player_start)
         self._timer = Timer()
         self._is_on_reverse = False
+        self._episode += 1
+        self._frame = 0
 
     def _on_loop(self):
         self._timer.tick()
 
         measurements, sensor_data = self.client.read_data()
 
-        self._main_image = sensor_data['CameraRGB']
-        self._mini_view_image1 = sensor_data['CameraDepth']
-        self._mini_view_image2 = sensor_data['CameraSemSeg']
-        self._lidar_measurement = sensor_data['Lidar32']
+        self._main_image = sensor_data['CameraRGB'] if 'CameraRGB' in sensor_data else None
+        self._mini_view_image1 = sensor_data['CameraDepth'] if 'CameraDepth' in sensor_data else None
+        self._mini_view_image2 = sensor_data['CameraSemSeg'] if 'CameraSemSeg' in sensor_data else None
+        self._lidar_measurement = sensor_data['Lidar32'] if 'Lidar32' in sensor_data else None
 
         # Print measurements every second.
         if self._timer.elapsed_seconds_since_lap() > 1.0:
@@ -219,6 +226,17 @@ class CarlaGame(object):
             self._on_new_episode()
         else:
             self.client.send_control(control)
+
+        # Save the images to disk if requested.
+        if self._save_images_to_disk:
+            for name, measurement in sensor_data.items():
+                if isinstance(measurement, sensor.LidarMeasurement):
+                    measurement.data
+                    measurement.save_to_disk(self._lidar_filename_format.format(self._episode, name, self._frame))
+                else:
+                    measurement.save_to_disk(self._image_filename_format.format(self._episode, name, self._frame))
+
+        self._frame += 1
 
     def _get_keyboard_control(self, keys):
         """
@@ -300,16 +318,23 @@ class CarlaGame(object):
 
         if self._lidar_measurement is not None:
 
-            lidar_data = np.array(self._lidar_measurement.data['points'][:, :, :2])
-            lidar_data /= 50.0
-            lidar_data += 100.0
-            lidar_data = np.fabs(lidar_data)
-            lidar_data = lidar_data.astype(np.int32)
-            lidar_data = np.reshape(lidar_data, (-1, 2))
+            lidar_points = np.array(self._lidar_measurement.data['points'][:, :, :2])
+            lidar_points /= 50.0
+            lidar_points += 100.0
+            lidar_points = np.fabs(lidar_points)
+            lidar_points = lidar_points.astype(np.int32)
+            lidar_points = np.reshape(lidar_points, (-1, 2))
+
+            lidar_points_labels = self._lidar_measurement.data['labels']
+            lidar_points_labels = np.reshape(lidar_points_labels, (-1))
+
             #draw lidar
             lidar_img_size = (200, 200, 3)
             lidar_img = np.zeros(lidar_img_size)
-            lidar_img[tuple(lidar_data.T)] = (255, 255, 255)
+
+            for class_id, color in image_converter.semantic_segmentation_classes_to_colors.items():
+                lidar_img[tuple(lidar_points[lidar_points_labels == class_id].T)] = color
+
             surface = pygame.surfarray.make_surface(
                 lidar_img
             )
@@ -364,6 +389,10 @@ def main():
         metavar='M',
         default=None,
         help='plot the map of the current city (needs to match active map in server, options: Town01 or Town02)')
+    argparser.add_argument(
+        '-i', '--images-to-disk',
+        action='store_true',
+        help='save images to disk')
     args = argparser.parse_args()
 
     log_level = logging.DEBUG if args.debug else logging.INFO
@@ -377,7 +406,7 @@ def main():
         try:
 
             with make_carla_client(args.host, args.port) as client:
-                game = CarlaGame(client, args.map_name)
+                game = CarlaGame(client, args.map_name, save_images_to_disk=args.images_to_disk)
                 game.execute()
                 break
 

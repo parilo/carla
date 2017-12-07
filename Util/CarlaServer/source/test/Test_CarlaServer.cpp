@@ -56,9 +56,10 @@ TEST(CarlaServerAPI, SimBlocking) {
   };
 
   const uint32_t points_count_by_channel[32] = {1u};
-  const double lidar_data[32 * 3] = {1};
+  const double lidar_points[32 * 3] = {1};
+  const char lidar_points_labels[32] = {0};
   const carla_lidar_measurement lidar_measurements[] = {
-    {10, 32, points_count_by_channel, lidar_data}
+    {10, 32, points_count_by_channel, lidar_points, lidar_points_labels}
   };
 
   const carla_transform start_locations[] = {

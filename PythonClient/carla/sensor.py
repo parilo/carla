@@ -186,7 +186,12 @@ class LidarMeasurement(SensorData):
         end = begin + self.points_size
         self.points_data = raw_data[begin:end]
 
-        self._data_size = 4*4 + points_count_by_channel_size + self.points_size
+        self.points_labels_size = int(np.sum(self.points_count_by_channel))
+        begin = 4*4 + points_count_by_channel_size + self.points_size
+        end = begin + self.points_labels_size
+        self.points_labels_data = raw_data[begin:end]
+
+        self._data_size = 4*4 + points_count_by_channel_size + self.points_size + self.points_labels_size
 
     @property
     def size_in_bytes(self):
@@ -201,14 +206,18 @@ class LidarMeasurement(SensorData):
         if self._converted_data is None:
 
             points_in_one_channel = self.points_count_by_channel[0]
-            points = np.frombuffer(self.points_data[:self.points_size], dtype='float')
+            points = np.frombuffer(self.points_data, dtype='float')
             points = np.reshape(points, (self.channels_count, points_in_one_channel, 3))
+
+            labels = np.frombuffer(self.points_labels_data, dtype='byte')
+            labels = np.reshape(labels, (self.channels_count, points_in_one_channel))
 
             self._converted_data = {
                 'horizontal_angle' : self.horizontal_angle,
                 'channels_count' : self.channels_count,
                 'points_count_by_channel' : self.points_count_by_channel,
-                'points' : points
+                'points' : points,
+                'labels' : labels
             }
 
         return self._converted_data
@@ -223,5 +232,6 @@ class LidarMeasurement(SensorData):
                 'horizontal_angle' : self.horizontal_angle,
                 'channels_count' : self.channels_count,
                 'points_count_by_channel' : self.points_count_by_channel.tolist(),
-                'points' : self._converted_data['points'].tolist()
+                'points' : self._converted_data['points'].tolist(),
+                'labels' : self._converted_data['labels'].tolist()
             }))
