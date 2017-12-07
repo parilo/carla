@@ -16,7 +16,12 @@ public:
   {}
 
   int GetId();
-  bool Measure(ALidar* Lidar, float HorizontalAngle, FVector& XYZ, bool Debug = false);
+  bool Measure(
+    ALidar* Lidar,
+    float HorizontalAngle,
+    FVector& XYZ,
+    ECityObjectLabel& Label,
+    bool Debug = false);
 
 private:
 

@@ -40,6 +40,7 @@ extern "C" {
     int channels_count;
     const uint32_t *points_count_by_channel;
     const double *data;
+    const char *segmentation_labels;
   };
 
   struct carla_transform {

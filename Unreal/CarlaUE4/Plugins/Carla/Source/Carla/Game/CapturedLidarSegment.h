@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Tagger.h"
 #include "CapturedLidarSegment.generated.h"
 
 ///
@@ -14,6 +15,7 @@ struct FCapturedLidarLaserSegment
 
   UPROPERTY(VisibleAnywhere)
   TArray<FVector> Points;
+  TArray<ECityObjectLabel> Labels;
 };
 
 USTRUCT()

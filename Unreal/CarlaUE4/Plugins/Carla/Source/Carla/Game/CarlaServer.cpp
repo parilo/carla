@@ -84,6 +84,7 @@ static void Set(carla_image &cImage, const FCapturedImage &uImage)
 struct carla_lidar_measurement_data {
   TUniquePtr<uint32_t[]> points_count_by_channel;
   TUniquePtr<double[]> points;
+  TUniquePtr<char[]> segmentation_labels;
 };
 
 static void Set(
@@ -106,22 +107,26 @@ static void Set(
       total_points += points_count;
     }
     cLidarMeasurementData.points = MakeUnique<double[]>(3 * total_points);
+    cLidarMeasurementData.segmentation_labels = MakeUnique<char[]>(total_points);
     size_t points_filled = 0;
     for(int i=0; i<cLidarMeasurement.channels_count; i++)
     {
       size_t points_count = cLidarMeasurementData.points_count_by_channel[i];
       auto& laser_points = uLidarSegment.LidarLasersSegments[i].Points;
+      auto& laser_points_labels = uLidarSegment.LidarLasersSegments[i].Labels;
       for(int pi=0; pi<points_count; pi++)
       {
         cLidarMeasurementData.points[3 * (pi + points_filled)] = laser_points[pi].X;
         cLidarMeasurementData.points[3 * (pi + points_filled) + 1] = laser_points[pi].Y;
         cLidarMeasurementData.points[3 * (pi + points_filled) + 2] = laser_points[pi].Z;
+        cLidarMeasurementData.segmentation_labels[pi + points_filled] = char(laser_points_labels[pi]);
       }
       points_filled += points_count;
     }
 
     cLidarMeasurement.points_count_by_channel = cLidarMeasurementData.points_count_by_channel.Get();
     cLidarMeasurement.data = cLidarMeasurementData.points.Get();
+    cLidarMeasurement.segmentation_labels = cLidarMeasurementData.segmentation_labels.Get();
 
 #ifdef CARLA_SERVER_EXTRA_LOG
     {

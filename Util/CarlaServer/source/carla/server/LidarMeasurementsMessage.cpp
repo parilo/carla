@@ -13,6 +13,20 @@ namespace server {
     return sizeof(uint32_t) * lidar_measurement.channels_count;
   }
 
+  static void GetSizesOfLidarPoints(
+      const carla_lidar_measurement& lidar_measurement,
+      size_t& points_size,
+      size_t& points_labels_size)
+  {
+    size_t total_points = 0;
+    for(int i=0; i<lidar_measurement.channels_count; i++)
+    {
+      total_points += lidar_measurement.points_count_by_channel[i];
+    }
+    points_size = total_points * 3 * sizeof(double);
+    points_labels_size = total_points * sizeof(char);
+  }
+
   static size_t GetSizeOfLidarPoints(const carla_lidar_measurement& lidar_measurement) {
     size_t total_points = 0;
     for(int i=0; i<lidar_measurement.channels_count; i++)
@@ -25,10 +39,15 @@ namespace server {
   static size_t GetSizeOfBuffer(const_array_view<carla_lidar_measurement> lidar_measurements) {
     size_t total = 0u;
     for (const auto &lidar_measurement : lidar_measurements) {
+      size_t& points_size;
+      size_t& points_labels_size;
+      GetSizesOfLidarPoints(lidar_measurement, points_size, points_labels_size);
+
       total += sizeof(double); // horizontal_angle
       total += 2 * sizeof(uint32_t); // type_of_the_message, channels_count
       total += GetSizeOfLidarPointsCounts(lidar_measurement);
-      total += GetSizeOfLidarPoints(lidar_measurement);
+      total += points_size;
+      total += points_labels_size;
     }
     return total;
   }
@@ -45,11 +64,20 @@ namespace server {
 
   static size_t WriteLidarMeasurementToBuffer(unsigned char *buffer, const carla_lidar_measurement &lidar_measurement) {
     const auto points_counts_size = GetSizeOfLidarPointsCounts(lidar_measurement);
-    const auto points_size = GetSizeOfLidarPoints(lidar_measurement);
+    size_t& points_size;
+    size_t& points_labels_size;
+    GetSizesOfLidarPoints(lidar_measurement, points_size, points_labels_size);
+
     DEBUG_ASSERT(lidar_measurement.points_count_by_channel != nullptr);
     DEBUG_ASSERT(lidar_measurement.data != nullptr);
+    DEBUG_ASSERT(lidar_measurement.segmentation_labels != nullptr);
+
     std::memcpy(buffer, lidar_measurement.points_count_by_channel, points_counts_size);
     std::memcpy(buffer + points_counts_size, lidar_measurement.data, points_size);
+    std::memcpy(
+      buffer + points_counts_size + points_size,
+      lidar_measurement.segmentation_labels,
+      points_labels_size);
     return points_counts_size + points_size;
   }
 

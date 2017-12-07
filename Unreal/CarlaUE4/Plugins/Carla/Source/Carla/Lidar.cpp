@@ -65,13 +65,16 @@ void ALidar::ReadPoints(float DeltaTime, FCapturedLidarSegment& LidarSegmentData
   {
     auto& Laser = Lasers[li];
     auto& LaserPoints = LidarSegmentData.LidarLasersSegments[li].Points;
+    auto& LaserPointsLabels = LidarSegmentData.LidarLasersSegments[li].Labels;
     LaserPoints.AddDefaulted(PointsToScanWithOneLaser);
+    LaserPointsLabels.AddDefaulted(PointsToScanWithOneLaser);
     for (int i=0; i<PointsToScanWithOneLaser; i++)
     {
       Laser.Measure(
         this,
         CurrentHorizontalAngle + AngleDistanceOfLaserMeasure * i,
         LaserPoints[i],
+        LaserPointsLabels[i],
         ShowDebugPoints
       );
     }
