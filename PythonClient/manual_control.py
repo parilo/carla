@@ -69,28 +69,28 @@ def make_carla_settings():
         NumberOfPedestrians=30,
         WeatherId=random.choice([1, 3, 7, 8, 14]))
     settings.randomize_seeds()
-    camera0 = sensor.Camera('CameraRGB')
-    camera0.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
-    camera0.set_position(200, 0, 140)
-    camera0.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera0)
-    camera1 = sensor.Camera('CameraDepth', PostProcessing='Depth')
-    camera1.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
-    camera1.set_position(200, 0, 140)
-    camera1.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera1)
-    camera2 = sensor.Camera('CameraSemSeg', PostProcessing='SemanticSegmentation')
-    camera2.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
-    camera2.set_position(200, 0, 140)
-    camera2.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera2)
+    # camera0 = sensor.Camera('CameraRGB')
+    # camera0.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
+    # camera0.set_position(200, 0, 140)
+    # camera0.set_rotation(0.0, 0.0, 0.0)
+    # settings.add_sensor(camera0)
+    # camera1 = sensor.Camera('CameraDepth', PostProcessing='Depth')
+    # camera1.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    # camera1.set_position(200, 0, 140)
+    # camera1.set_rotation(0.0, 0.0, 0.0)
+    # settings.add_sensor(camera1)
+    # camera2 = sensor.Camera('CameraSemSeg', PostProcessing='SemanticSegmentation')
+    # camera2.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    # camera2.set_position(200, 0, 140)
+    # camera2.set_rotation(0.0, 0.0, 0.0)
+    # settings.add_sensor(camera2)
     lidar0 = sensor.Lidar('Lidar32')
     lidar0.set_position(0, 0, 250)
     lidar0.set_rotation(0, 0, 0)
     lidar0.set(
         Channels = 32,
         Range = 5000,
-        PointsPerSecond = 100000,
+        PointsPerSecond = 640000,
         RotationFrequency = 10,
         UpperFovLimit = 10,
         LowerFovLimit = -30,
