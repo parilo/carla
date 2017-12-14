@@ -69,21 +69,21 @@ def make_carla_settings():
         NumberOfPedestrians=30,
         WeatherId=random.choice([1, 3, 7, 8, 14]))
     settings.randomize_seeds()
-    camera0 = sensor.Camera('CameraRGB')
+    camera0 = sensor.Camera('CameraRGB', PostProcessing='None')
     camera0.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
     camera0.set_position(200, 0, 140)
     camera0.set_rotation(0.0, 0.0, 0.0)
     settings.add_sensor(camera0)
-    camera1 = sensor.Camera('CameraDepth', PostProcessing='Depth')
-    camera1.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
-    camera1.set_position(200, 0, 140)
-    camera1.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera1)
-    camera2 = sensor.Camera('CameraSemSeg', PostProcessing='SemanticSegmentation')
-    camera2.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
-    camera2.set_position(200, 0, 140)
-    camera2.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera2)
+    # camera1 = sensor.Camera('CameraDepth', PostProcessing='Depth')
+    # camera1.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    # camera1.set_position(200, 0, 140)
+    # camera1.set_rotation(0.0, 0.0, 0.0)
+    # settings.add_sensor(camera1)
+    # camera2 = sensor.Camera('CameraSemSeg', PostProcessing='SemanticSegmentation')
+    # camera2.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    # camera2.set_position(200, 0, 140)
+    # camera2.set_rotation(0.0, 0.0, 0.0)
+    # settings.add_sensor(camera2)
     lidar0 = sensor.Lidar('Lidar32')
     lidar0.set_position(0, 0, 250)
     lidar0.set_rotation(0, 0, 0)
@@ -176,10 +176,10 @@ class CarlaGame(object):
 
         measurements, sensor_data = self.client.read_data()
 
-        self._main_image = sensor_data['CameraRGB']
-        self._mini_view_image1 = sensor_data['CameraDepth']
-        self._mini_view_image2 = sensor_data['CameraSemSeg']
-        self._lidar_measurement = sensor_data['Lidar32']
+        self._main_image = sensor_data['CameraRGB'] if 'CameraRGB' in sensor_data else None
+        self._mini_view_image1 = sensor_data['CameraDepth'] if 'CameraDepth' in sensor_data else None
+        self._mini_view_image2 = sensor_data['CameraSemSeg'] if 'CameraSemSeg' in sensor_data else None
+        self._lidar_measurement = sensor_data['Lidar32'] if 'Lidar32' in sensor_data else None
 
         # Print measurements every second.
         if self._timer.elapsed_seconds_since_lap() > 1.0:

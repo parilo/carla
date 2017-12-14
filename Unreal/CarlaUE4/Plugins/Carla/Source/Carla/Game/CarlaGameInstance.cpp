@@ -16,6 +16,11 @@ UCarlaGameInstance::UCarlaGameInstance() {
   check(CarlaSettings != nullptr);
   CarlaSettings->LoadSettings();
   CarlaSettings->LogSettings();
+
+  AdditionalCarlaSettings = CreateDefaultSubobject<UCarlaSettings>(TEXT("AdditionalCarlaSettings"));
+  check(AdditionalCarlaSettings != nullptr);
+  AdditionalCarlaSettings->LoadSettings();
+  AdditionalCarlaSettings->LogSettings();
 }
 
 UCarlaGameInstance::~UCarlaGameInstance() {}

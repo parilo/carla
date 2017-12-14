@@ -11,6 +11,7 @@
 class ACarlaGameState;
 class ACarlaVehicleController;
 class CarlaServer;
+class UCarlaSettings;
 
 /// Implements remote control of game and player.
 class CARLA_API CarlaGameController : public CarlaGameControllerBase
@@ -21,7 +22,8 @@ public:
 
   ~CarlaGameController();
 
-  virtual void Initialize(UCarlaSettings &CarlaSettings) override;
+  // virtual void Initialize(UCarlaSettings &CarlaSettings) override;
+  virtual void Initialize(UCarlaGameInstance &CarlaGameInstance) override;
 
   virtual APlayerStart *ChoosePlayerStart(const TArray<APlayerStart *> &AvailableStartSpots) override;
 
@@ -36,6 +38,7 @@ private:
   void RestartLevel();
 
   TUniquePtr<CarlaServer> Server;
+  TArray<TUniquePtr<CarlaServer>> AdditionalClientsServers;
 
   ACarlaVehicleController *Player = nullptr;
 

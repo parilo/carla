@@ -116,6 +116,7 @@ static void LoadSettingsFromConfig(
   }
   ConfigFile.GetBool(S_CARLA_SERVER, TEXT("SynchronousMode"), Settings.bSynchronousMode);
   ConfigFile.GetBool(S_CARLA_SERVER, TEXT("SendNonPlayerAgentsInfo"), Settings.bSendNonPlayerAgentsInfo);
+  ConfigFile.GetInt(S_CARLA_SERVER, TEXT("NumOfAdditionalPlayers"), Settings.NumOfAdditionalPlayers);
   // LevelSettings.
   ConfigFile.GetString(S_CARLA_LEVELSETTINGS, TEXT("PlayerVehicle"), Settings.PlayerVehicle);
   ConfigFile.GetInt(S_CARLA_LEVELSETTINGS, TEXT("NumberOfVehicles"), Settings.NumberOfVehicles);
@@ -212,14 +213,21 @@ void UCarlaSettings::LoadSettings()
 
 void UCarlaSettings::LoadSettingsFromString(const FString &INIFileContents)
 {
-  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string"));
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string %s"), *INIFileContents);
   ResetCameraDescriptions();
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 1"));
   ResetLidarDescriptions();
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 2"));
   MyIniFile ConfigFile;
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 3"));
   ConfigFile.ProcessInputFileContents(INIFileContents);
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 4"));
   constexpr bool bLoadCarlaServerSection = false;
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 5"));
   LoadSettingsFromConfig(ConfigFile, *this, bLoadCarlaServerSection);
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 6"));
   CurrentFileName = TEXT("<string-provided-by-client>");
+  UE_LOG(LogCarla, Log, TEXT("Loading CARLA settings from string 7"));
 }
 
 void UCarlaSettings::LoadWeatherDescriptions(const FString &MapName)
@@ -248,6 +256,7 @@ void UCarlaSettings::LogSettings() const
   UE_LOG(LogCarla, Log, TEXT("Server Time-out = %d ms"), ServerTimeOut);
   UE_LOG(LogCarla, Log, TEXT("Synchronous Mode = %s"), EnabledDisabled(bSynchronousMode));
   UE_LOG(LogCarla, Log, TEXT("Send Non-Player Agents Info = %s"), EnabledDisabled(bSendNonPlayerAgentsInfo));
+  UE_LOG(LogCarla, Log, TEXT("Additional Players = %d"), NumOfAdditionalPlayers);
   UE_LOG(LogCarla, Log, TEXT("[%s]"), S_CARLA_LEVELSETTINGS);
   UE_LOG(LogCarla, Log, TEXT("Player Vehicle        = %s"), (PlayerVehicle.IsEmpty() ? TEXT("Default") : *PlayerVehicle));
   UE_LOG(LogCarla, Log, TEXT("Number Of Vehicles    = %d"), NumberOfVehicles);
@@ -305,8 +314,11 @@ const FWeatherDescription &UCarlaSettings::GetWeatherDescriptionByIndex(int32 In
 
 void UCarlaSettings::ResetCameraDescriptions()
 {
+  UE_LOG(LogCarla, Log, TEXT("  ResetCameraDescriptions 1"));
   CameraDescriptions.Empty();
+  UE_LOG(LogCarla, Log, TEXT("  ResetCameraDescriptions 2"));
   bSemanticSegmentationEnabled = false;
+  UE_LOG(LogCarla, Log, TEXT("  ResetCameraDescriptions 3"));
 }
 
 void UCarlaSettings::ResetLidarDescriptions()

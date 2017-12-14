@@ -41,6 +41,12 @@ public:
     return *CarlaSettings;
   }
 
+  UCarlaSettings &GetAdditionalCarlaSettings()
+  {
+    check(AdditionalCarlaSettings != nullptr);
+    return *AdditionalCarlaSettings;
+  }
+
   const UCarlaSettings &GetCarlaSettings() const
   {
     check(CarlaSettings != nullptr);
@@ -58,6 +64,9 @@ private:
 
   UPROPERTY(Category = "CARLA Settings", EditAnywhere)
   UCarlaSettings *CarlaSettings;
+
+  UPROPERTY(Category = "CARLA Settings", EditAnywhere)
+  UCarlaSettings *AdditionalCarlaSettings;
 
   TUniquePtr<CarlaGameControllerBase> GameController;
 };

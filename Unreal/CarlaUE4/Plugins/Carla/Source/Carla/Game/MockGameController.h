@@ -16,7 +16,8 @@ public:
 
   explicit MockGameController(const FMockGameControllerSettings &Settings);
 
-  virtual void Initialize(UCarlaSettings &CarlaSettings) override;
+  // virtual void Initialize(UCarlaSettings &CarlaSettings) override;
+  virtual void Initialize(UCarlaGameInstance &CarlaGameInstance) override;
 
   virtual APlayerStart *ChoosePlayerStart(const TArray<APlayerStart *> &AvailableStartSpots) override;
 

@@ -6,12 +6,15 @@
 
 #include "Carla.h"
 #include "MockGameController.h"
+#include "CarlaGameInstance.h"
+#include "Settings/CarlaSettings.h"
 
 MockGameController::MockGameController(const FMockGameControllerSettings &InSettings) :
   Settings(InSettings) {}
 
-void MockGameController::Initialize(UCarlaSettings &CarlaSettings)
+void MockGameController::Initialize(UCarlaGameInstance &CarlaGameInstance)
 {
+  auto& CarlaSettings = CarlaGameInstance.GetCarlaSettings();
 #if WITH_EDITOR
   if (Settings.bOverrideCarlaSettings) {
     CarlaSettings.NumberOfVehicles = Settings.NumberOfVehicles;

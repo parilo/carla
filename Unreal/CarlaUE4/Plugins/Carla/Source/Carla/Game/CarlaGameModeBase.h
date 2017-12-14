@@ -82,6 +82,9 @@ private:
   ACarlaVehicleController *PlayerController;
 
   UPROPERTY()
+  ACarlaVehicleController *AdditionalPlayersControllers;
+
+  UPROPERTY()
   UTaggerDelegate *TaggerDelegate;
 
   UPROPERTY()

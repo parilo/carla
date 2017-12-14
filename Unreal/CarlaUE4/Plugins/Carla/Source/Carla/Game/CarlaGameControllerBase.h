@@ -10,7 +10,8 @@
 
 class AController;
 class APlayerStart;
-class UCarlaSettings;
+// class UCarlaSettings;
+class UCarlaGameInstance;
 
 /// Base class for a CARLA game controller.
 class CARLA_API CarlaGameControllerBase
@@ -19,7 +20,8 @@ public:
 
   virtual ~CarlaGameControllerBase() {}
 
-  virtual void Initialize(UCarlaSettings &CarlaSettings) = 0;
+  // virtual void Initialize(UCarlaSettings &CarlaSettings) = 0;
+  virtual void Initialize(UCarlaGameInstance &CarlaGameInstance) = 0;
 
   virtual APlayerStart *ChoosePlayerStart(const TArray<APlayerStart *> &AvailableStartSpots) = 0;
 

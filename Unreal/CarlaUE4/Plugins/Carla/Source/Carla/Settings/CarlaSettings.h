@@ -93,6 +93,10 @@ public:
   UPROPERTY(Category = "CARLA Server", VisibleAnywhere, meta = (EditCondition = bUseNetworking))
   bool bSendNonPlayerAgentsInfo = false;
 
+  /** Number of additional agents */
+  UPROPERTY(Category = "CARLA Server", VisibleAnywhere, meta = (EditCondition = bUseNetworking))
+  bool NumOfAdditionalPlayers = 0;
+
   /// @}
   // ===========================================================================
   /// @name Level Settings

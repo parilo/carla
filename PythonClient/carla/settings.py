@@ -36,6 +36,7 @@ class CarlaSettings(object):
         # [CARLA/Server]
         self.SynchronousMode = True
         self.SendNonPlayerAgentsInfo = False
+        self.NumOfAdditionalPlayers = 1
         # [CARLA/LevelSettings]
         self.PlayerVehicle = None
         self.NumberOfVehicles = 20
@@ -92,7 +93,8 @@ class CarlaSettings(object):
 
         add_section(S_SERVER, self, [
             'SynchronousMode',
-            'SendNonPlayerAgentsInfo'])
+            'SendNonPlayerAgentsInfo',
+            'NumOfAdditionalPlayers'])
         add_section(S_LEVEL, self, [
             'NumberOfVehicles',
             'NumberOfPedestrians',

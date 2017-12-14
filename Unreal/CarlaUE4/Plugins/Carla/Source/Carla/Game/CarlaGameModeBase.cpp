@@ -7,6 +7,7 @@
 #include "Carla.h"
 #include "CarlaGameModeBase.h"
 
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "ConstructorHelpers.h"
 #include "Engine/PlayerStartPIE.h"
 #include "EngineUtils.h"
@@ -70,7 +71,8 @@ void ACarlaGameModeBase::InitGame(
 #else
     CarlaSettings.LoadWeatherDescriptions(MapName);
 #endif // WITH_EDITOR
-    GameController->Initialize(CarlaSettings);
+    // GameController->Initialize(CarlaSettings);
+    GameController->Initialize(*GameInstance);
     CarlaSettings.ValidateWeatherId();
     CarlaSettings.LogSettings();
   }
@@ -128,6 +130,9 @@ void ACarlaGameModeBase::RestartPlayer(AController* NewPlayer)
 void ACarlaGameModeBase::BeginPlay()
 {
   Super::BeginPlay();
+
+  AdditionalPlayersControllers = Cast<ACarlaVehicleController>(
+    UGameplayStatics::CreatePlayer(GetWorld(), -1, false));
 
   auto CarlaGameState = Cast<ACarlaGameState>(GameState);
   checkf(

@@ -42,6 +42,7 @@ namespace server {
   static void CloseConnection(tcp::acceptor &_acceptor, tcp::socket &_socket) {
     log_info(LOG_PREFIX, "disconnecting");
     if (_acceptor.is_open()) {
+      log_error(LOG_PREFIX, "--- disconnecting port", _acceptor.local_endpoint().port());
       _acceptor.close();
     }
     if (_socket.is_open()) {
@@ -76,6 +77,7 @@ namespace server {
   }
 
   error_code TCPServer::Connect(uint32_t port, time_duration timeout) {
+    log_error(LOG_PREFIX, "--- connect to port", port);
     // Set the deadline, it will close the socket when expired.
     _deadline.expires_from_now(timeout);
 
